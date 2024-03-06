@@ -5,7 +5,7 @@ import type {
   SharedValue,
 } from './commonTypes';
 import { isJest } from './PlatformChecker';
-import { runOnUI } from './threads';
+import { executeOnUIRuntimeSync, runOnUI } from './threads';
 import { isSharedValue } from './isSharedValue';
 
 const IS_JEST = isJest();
@@ -14,6 +14,8 @@ type MapperExtractedInputs = SharedValue[];
 
 type Mapper = {
   id: number;
+  /** optional, defaults to String(id) – use for debugging */
+  name: string;
   dirty: boolean;
   worklet: () => void;
   inputs: MapperExtractedInputs;
@@ -30,7 +32,7 @@ function createMapperRegistry() {
 
   function updateMappersOrder() {
     // sort mappers topologically
-    // the algorithm here takes adventage of a fact that the topological order
+    // the algorithm here takes advantage of a fact that the topological order
     // of a transposed graph is a reverse topological order of the original graph
     // The graph in our case consists of mappers and an edge between two mappers
     // A and B exists if there is a shared value that's on A's output lists and on
@@ -49,10 +51,11 @@ function createMapperRegistry() {
     // beginning of the topological order list. Since we traverse a transposed graph,
     // instead of reversing that order we can use a normal array and push processed
     // mappers to the end. There is no need to reverse that array after we are done.
-    const pre = new Map(); // map from sv -> mapper that outputs that sv
+    const pre = new Map<SharedValue, Mapper[]>(); // map from sv -> mapper that outputs that sv
     mappers.forEach((mapper) => {
       if (mapper.outputs) {
-        for (const output of mapper.outputs) {
+        for (let i = -1, n = mapper.outputs.length; ++i < n; ) {
+          const output = mapper.outputs[i];
           const preMappers = pre.get(output);
           if (preMappers === undefined) {
             pre.set(output, [mapper]);
@@ -62,28 +65,31 @@ function createMapperRegistry() {
         }
       }
     });
+
     const visited = new Set();
-    const newOrder: Mapper[] = [];
+    sortedMappers.length = 0;
+
     function dfs(mapper: Mapper) {
       visited.add(mapper);
-      for (const input of mapper.inputs) {
+      for (let i = -1, n = mapper.inputs.length; ++i < n; ) {
+        const input = mapper.inputs[i];
         const preMappers = pre.get(input);
         if (preMappers) {
-          for (const preMapper of preMappers) {
+          for (let j = -1, m = preMappers.length; ++j < m; ) {
+            const preMapper = preMappers[j];
             if (!visited.has(preMapper)) {
               dfs(preMapper);
             }
           }
         }
       }
-      newOrder.push(mapper);
+      sortedMappers.push(mapper);
     }
     mappers.forEach((mapper) => {
       if (!visited.has(mapper)) {
         dfs(mapper);
       }
     });
-    sortedMappers = newOrder;
   }
 
   function mapperRun() {
@@ -137,39 +143,21 @@ function createMapperRegistry() {
     }
   }
 
-  function extractInputs(
-    inputs: unknown,
-    resultArray: MapperExtractedInputs
-  ): MapperExtractedInputs {
-    if (Array.isArray(inputs)) {
-      for (const input of inputs) {
-        input && extractInputs(input, resultArray);
-      }
-    } else if (isSharedValue(inputs)) {
-      resultArray.push(inputs);
-    } else if (Object.getPrototypeOf(inputs) === Object.prototype) {
-      // we only extract inputs recursively from "plain" objects here, if object
-      // is of a derivative class (e.g. HostObject on web, or Map) we don't scan
-      // it recursively
-      for (const element of Object.values(inputs as Record<string, unknown>)) {
-        element && extractInputs(element, resultArray);
-      }
-    }
-    return resultArray;
-  }
-
   return {
+    mappers,
     start: (
       mapperID: number,
       worklet: () => void,
-      inputs: MapperRawInputs,
-      outputs?: MapperOutputs
+      inputs: MapperExtractedInputs,
+      outputs?: MapperOutputs,
+      name?: string
     ) => {
       const mapper: Mapper = {
         id: mapperID,
+        name: name || String(mapperID),
         dirty: true,
         worklet,
-        inputs: extractInputs(inputs, []),
+        inputs,
         outputs,
       };
       mappers.set(mapper.id, mapper);
@@ -195,29 +183,91 @@ function createMapperRegistry() {
   };
 }
 
+function extractInputs(
+  inputs: unknown,
+  resultArray: MapperExtractedInputs
+): MapperExtractedInputs {
+  if (Array.isArray(inputs)) {
+    inputs.forEach((input) => input && extractInputs(input, resultArray));
+  } else if (isSharedValue(inputs)) {
+    resultArray.push(inputs);
+  } else if (Object.getPrototypeOf(inputs) === Object.prototype) {
+    // we only extract inputs recursively from "plain" objects here, if object
+    // is of a derivative class (e.g. HostObject on web, or Map) we don't scan
+    // it recursively
+    for (const element of Object.values(inputs as Record<string, unknown>)) {
+      element && extractInputs(element, resultArray);
+    }
+  }
+  return resultArray;
+}
+
+const startMapperOnUI = (
+  mapperID: number,
+  worklet: () => void,
+  inputs: MapperRawInputs,
+  outputs?: MapperOutputs,
+  name?: string
+) => {
+  'worklet';
+  let mapperRegistry = (global as any).__mapperRegistry;
+  if (mapperRegistry === undefined) {
+    mapperRegistry = (global as any).__mapperRegistry = createMapperRegistry();
+  }
+  mapperRegistry.start(mapperID, worklet, inputs, outputs, name);
+  return undefined;
+};
+
+const stopMapperOnUI = (mapperID: number) => {
+  'worklet';
+  const mapperRegistry = (global as any).__mapperRegistry;
+  mapperRegistry?.stop(mapperID);
+};
+
 let MAPPER_ID = 9999;
 
 export function startMapper(
   worklet: () => void,
   inputs: MapperRawInputs = [],
-  outputs: MapperOutputs = []
+  outputs: MapperOutputs = [],
+  name?: string
 ): number {
-  const mapperID = (MAPPER_ID += 1);
+  const mapperID = (MAPPER_ID = (MAPPER_ID + 1) % Number.MAX_SAFE_INTEGER);
 
-  runOnUI(() => {
-    let mapperRegistry = global.__mapperRegistry;
-    if (mapperRegistry === undefined) {
-      mapperRegistry = global.__mapperRegistry = createMapperRegistry();
-    }
-    mapperRegistry.start(mapperID, worklet, inputs, outputs);
-  })();
+  executeOnUIRuntimeSync(startMapperOnUI)(
+    mapperID,
+    worklet,
+    extractInputs(inputs, []),
+    outputs,
+    name
+  );
 
   return mapperID;
 }
 
 export function stopMapper(mapperID: number): void {
-  runOnUI(() => {
-    const mapperRegistry = global.__mapperRegistry;
-    mapperRegistry?.stop(mapperID);
+  runOnUI(stopMapperOnUI)(mapperID);
+}
+
+export function getMapperStats() {
+  return executeOnUIRuntimeSync(() => {
+    const mappers = (global as any).__mapperRegistry.mappers as Map<
+      number,
+      Mapper
+    >;
+    if (!mappers) {
+      return {
+        mappers: [],
+      };
+    }
+    return {
+      mappers: Array.from(mappers.values()).map((mapper: Mapper) => {
+        return {
+          id: mapper.id,
+          name: mapper.name,
+          dirty: mapper.dirty,
+        };
+      }),
+    };
   })();
 }
