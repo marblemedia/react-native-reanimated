@@ -34,27 +34,27 @@ function measureFabric(animatedRef: AnimatedRefOnJS | AnimatedRefOnUI) {
 
   const viewTag = animatedRef();
   if (viewTag === -1) {
-    console.warn(
-      `[Reanimated] The view with tag ${viewTag} is not a valid argument for measure(). This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
-    );
+    // console.warn(
+    //   `[Reanimated] The view with tag ${viewTag} is not a valid argument for measure(). This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
+    // );
     return null;
   }
 
   const measured = _measureFabric!(viewTag as ShadowNodeWrapper);
   if (measured === null) {
-    console.warn(
-      `[Reanimated] The view has some undefined, not-yet-computed or meaningless value of \`LayoutMetrics\` type. This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
-    );
+    // console.warn(
+    //   `[Reanimated] The view has some undefined, not-yet-computed or meaningless value of \`LayoutMetrics\` type. This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
+    // );
     return null;
   } else if (measured.x === -1234567) {
-    console.warn(
-      `[Reanimated] The view returned an invalid measurement response. Please make sure the view is currently rendered.`
-    );
+    // console.warn(
+    //   `[Reanimated] The view returned an invalid measurement response. Please make sure the view is currently rendered.`
+    // );
     return null;
   } else if (isNaN(measured.x)) {
-    console.warn(
-      `[Reanimated] The view gets view-flattened on Android. To disable view-flattening, set \`collapsable={false}\` on this component.`
-    );
+    // console.warn(
+    //   `[Reanimated] The view gets view-flattened on Android. To disable view-flattening, set \`collapsable={false}\` on this component.`
+    // );
     return null;
   } else {
     return measured;
@@ -69,33 +69,33 @@ function measurePaper(animatedRef: AnimatedRefOnJS | AnimatedRefOnUI) {
 
   const viewTag = animatedRef();
   if (viewTag === -1) {
-    console.warn(
-      `[Reanimated] The view with tag ${viewTag} is not a valid argument for measure(). This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
-    );
+    // console.warn(
+    //   `[Reanimated] The view with tag ${viewTag} is not a valid argument for measure(). This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
+    // );
     return null;
   }
 
   const measured = _measurePaper!(viewTag as number);
   if (measured === null) {
-    console.warn(
-      `[Reanimated] The view with tag ${
-        viewTag as number
-      } has some undefined, not-yet-computed or meaningless value of \`LayoutMetrics\` type. This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
-    );
+    // console.warn(
+    //   `[Reanimated] The view with tag ${
+    //     viewTag as number
+    //   } has some undefined, not-yet-computed or meaningless value of \`LayoutMetrics\` type. This may be because the view is not currently rendered, which may not be a bug (e.g. an off-screen FlatList item).`
+    // );
     return null;
   } else if (measured.x === -1234567) {
-    console.warn(
-      `[Reanimated] The view with tag ${
-        viewTag as number
-      } returned an invalid measurement response. Please make sure the view is currently rendered.`
-    );
+    // console.warn(
+    //   `[Reanimated] The view with tag ${
+    //     viewTag as number
+    //   } returned an invalid measurement response. Please make sure the view is currently rendered.`
+    // );
     return null;
   } else if (isNaN(measured.x)) {
-    console.warn(
-      `[Reanimated] The view with tag ${
-        viewTag as number
-      } gets view-flattened on Android. To disable view-flattening, set \`collapsable={false}\` on this component.`
-    );
+    // console.warn(
+    //   `[Reanimated] The view with tag ${
+    //     viewTag as number
+    //   } gets view-flattened on Android. To disable view-flattening, set \`collapsable={false}\` on this component.`
+    // );
     return null;
   } else {
     return measured;
