@@ -5,7 +5,7 @@ import type {
   SharedValue,
 } from './commonTypes';
 import { isJest } from './PlatformChecker';
-import { executeOnUIRuntimeSync, runOnUI } from './threads';
+import { executeOnUIRuntimeSync, runOnUIImmediately } from './threads';
 import { isSharedValue } from './isSharedValue';
 
 const IS_JEST = isJest();
@@ -234,7 +234,7 @@ export function startMapper(
 ): number {
   const mapperID = (MAPPER_ID = (MAPPER_ID + 1) % Number.MAX_SAFE_INTEGER);
 
-  executeOnUIRuntimeSync(startMapperOnUI)(
+  runOnUIImmediately(startMapperOnUI)(
     mapperID,
     worklet,
     extractInputs(inputs, []),
@@ -246,7 +246,7 @@ export function startMapper(
 }
 
 export function stopMapper(mapperID: number): void {
-  runOnUI(stopMapperOnUI)(mapperID);
+  runOnUIImmediately(stopMapperOnUI)(mapperID);
 }
 
 export function getMapperStats() {
