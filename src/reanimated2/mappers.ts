@@ -251,7 +251,7 @@ export function stopMapper(mapperID: number): void {
 
 export function getMapperStats() {
   return executeOnUIRuntimeSync(() => {
-    const mappers = (global as any).__mapperRegistry.mappers as Map<
+    const mappers = (global as any).__mapperRegistry?.mappers as Map<
       number,
       Mapper
     >;
