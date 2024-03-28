@@ -15,6 +15,7 @@ void REAIOSUIScheduler::scheduleOnUI(std::function<void()> job)
   UIScheduler::scheduleOnUI(job);
 
   if (!scheduledOnUI_) {
+    scheduledOnUI_ = true;
     dispatch_async(dispatch_get_main_queue(), ^{
       triggerUI();
     });
