@@ -93,11 +93,11 @@ jsi::Value WorkletRuntime::executeSync(
       rt,
       worklet,
       "[Reanimated] Only worklets can be executed synchronously on UI runtime.");
-  auto lock = std::unique_lock<std::recursive_mutex>(*runtimeMutex_);
+  // auto lock = std::unique_lock<std::recursive_mutex>(*runtimeMutex_);
   jsi::Runtime &uiRuntime = getJSIRuntime();
   auto result = runGuarded(shareableWorklet);
   auto shareableResult = extractShareableOrThrow(uiRuntime, result);
-  lock.unlock();
+  // lock.unlock();
   return shareableResult->getJSValue(rt);
 }
 
