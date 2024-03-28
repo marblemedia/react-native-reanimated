@@ -17,6 +17,7 @@ export function makeUIMutable<Value>(initial: Value): Mutable<Value> {
   let value = initial;
 
   const self: Mutable<Value> = {
+    initial,
     set value(newValue) {
       valueSetter(self, newValue);
     },
@@ -57,6 +58,10 @@ export function makeUIMutable<Value>(initial: Value): Mutable<Value> {
   return self;
 }
 
+const uiValueGetter = executeOnUIRuntimeSync(<Value>(sv: Mutable<Value>) => {
+  return sv.value;
+});
+
 export function makeMutable<Value>(initial: Value): Mutable<Value> {
   let value: Value = initial;
   const handle = makeShareableCloneRecursive({
@@ -70,6 +75,7 @@ export function makeMutable<Value>(initial: Value): Mutable<Value> {
     ? new Map<number, Listener<Value>>()
     : undefined;
   const mutable: Mutable<Value> = {
+    initial,
     set value(newValue) {
       if (SHOULD_BE_USE_WEB) {
         valueSetter(mutable, newValue);
@@ -83,9 +89,6 @@ export function makeMutable<Value>(initial: Value): Mutable<Value> {
       if (SHOULD_BE_USE_WEB) {
         return value;
       }
-      const uiValueGetter = executeOnUIRuntimeSync((sv: Mutable<Value>) => {
-        return sv.value;
-      });
       return uiValueGetter(mutable);
     },
     set _value(newValue: Value) {
