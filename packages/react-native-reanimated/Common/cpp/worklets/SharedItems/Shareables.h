@@ -232,26 +232,61 @@ class ShareableHostFunction : public Shareable {
   const unsigned int paramCount_;
 };
 
+class MutableRawBuffer : public jsi::MutableBuffer {
+public:
+    MutableRawBuffer(uint8_t* data, size_t size)
+        : _data(data), _size(size), _managedData(nullptr) {}
+
+    MutableRawBuffer(std::shared_ptr<std::vector<uint8_t>> managedData)
+        : _data(managedData->data()), _size(managedData->size()), _managedData(std::move(managedData)) {}
+
+    static std::shared_ptr<MutableRawBuffer> create(size_t size) {
+        auto managedData = std::make_shared<std::vector<uint8_t>>(size);
+        return std::shared_ptr<MutableRawBuffer>(new MutableRawBuffer(managedData));
+    }
+
+    ~MutableRawBuffer() override {
+        if (_managedData) {
+            _managedData->clear();
+        }
+        _data = nullptr;
+        _size = 0;
+    }
+
+    MutableRawBuffer(const MutableRawBuffer&) = delete;
+    MutableRawBuffer& operator=(const MutableRawBuffer&) = delete;
+
+    MutableRawBuffer(MutableRawBuffer&&) = default;
+    MutableRawBuffer& operator=(MutableRawBuffer&&) = default;
+
+    uint8_t* data() override {
+        if (!_data) throw std::runtime_error("Attempting to access null data");
+        return _data;
+    }
+    
+    size_t size() const override { return _size; }
+
+private:
+    uint8_t* _data;
+    size_t _size;
+    std::shared_ptr<std::vector<uint8_t>> _managedData;
+};
+
 class ShareableArrayBuffer : public Shareable {
- public:
-  ShareableArrayBuffer(
-      jsi::Runtime &rt,
-#if REACT_NATIVE_MINOR_VERSION >= 72
-      const jsi::ArrayBuffer &arrayBuffer
-#else
-      jsi::ArrayBuffer arrayBuffer
-#endif
-      )
-      : Shareable(ArrayBufferType),
-        data_(
-            arrayBuffer.data(rt),
-            arrayBuffer.data(rt) + arrayBuffer.size(rt)) {
-  }
+public:
+    ShareableArrayBuffer(jsi::Runtime &rt, const jsi::ArrayBuffer &arrayBuffer)
+        : Shareable(ArrayBufferType), 
+          data_(arrayBuffer.data(rt)),
+          size_(arrayBuffer.size(rt)) {}
 
-  jsi::Value toJSValue(jsi::Runtime &rt) override;
+    jsi::Value toJSValue(jsi::Runtime &rt) override {
+        auto buf = std::make_shared<MutableRawBuffer>(data_, size_);
+        return jsi::ArrayBuffer(rt, buf);
+    }
 
- protected:
-  const std::vector<uint8_t> data_;
+protected:
+    uint8_t *data_;
+    size_t size_;
 };
 
 class ShareableWorklet : public ShareableObject {
