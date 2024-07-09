@@ -189,17 +189,6 @@ jsi::Value ShareableArray::toJSValue(jsi::Runtime &rt) {
   return ary;
 }
 
-jsi::Value ShareableArrayBuffer::toJSValue(jsi::Runtime &rt) {
-  auto size = static_cast<int>(data_.size());
-  auto arrayBuffer = rt.global()
-                         .getPropertyAsFunction(rt, "ArrayBuffer")
-                         .callAsConstructor(rt, size)
-                         .getObject(rt)
-                         .getArrayBuffer(rt);
-  memcpy(arrayBuffer.data(rt), data_.data(), size);
-  return arrayBuffer;
-}
-
 ShareableObject::ShareableObject(jsi::Runtime &rt, const jsi::Object &object)
     : Shareable(ObjectType) {
   auto propertyNames = object.getPropertyNames(rt);
