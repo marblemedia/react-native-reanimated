@@ -8,6 +8,8 @@ import {
   runOnUIImmediately,
 } from './threads';
 import { mockedRequestAnimationFrame } from './mockedRequestAnimationFrame';
+// @ts-ignore js file
+import { setupClasses } from './setupClasses';
 
 const IS_JEST = isJest();
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
@@ -121,6 +123,7 @@ export function initializeUIRuntime() {
 
   runOnUIImmediately(() => {
     'worklet';
+    setupClasses();
     setupCallGuard();
     setupConsole();
     if (!SHOULD_BE_USE_WEB) {
