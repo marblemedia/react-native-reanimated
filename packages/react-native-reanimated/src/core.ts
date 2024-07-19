@@ -81,7 +81,7 @@ export function registerEventHandler<T>(
     'worklet';
     global.__frameTimestamp = eventTimestamp;
     eventHandler(event);
-    global.__flushAnimationFrame(eventTimestamp);
+    // global.__flushAnimationFrame(eventTimestamp);
     global.__frameTimestamp = undefined;
   }
   return NativeReanimatedModule.registerEventHandler(
