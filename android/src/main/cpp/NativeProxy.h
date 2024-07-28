@@ -240,6 +240,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
       const jsi::Value &commandNameValue,
       const jsi::Value &argsValue);
   std::vector<std::pair<std::string, double>> measure(int viewTag);
+  std::vector<std::pair<std::string, double>> hitTest(int viewTag, double x, double);
 #endif
   void handleEvent(
       jni::alias_ref<JString> eventName,

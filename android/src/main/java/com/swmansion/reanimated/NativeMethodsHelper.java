@@ -36,6 +36,29 @@ public class NativeMethodsHelper {
     return result;
   }
 
+  public static float[] hitTest(View view, double x, double y) {
+    View rootView = (View) RootViewUtil.getRootView(view);
+    if (rootView == null || view == null) {
+      float result[] = new float[6];
+      result[0] = -1234567;
+      return result;
+    }
+
+    int buffer[] = new int[4];
+    computeBoundingBox(rootView, buffer);
+    int rootX = buffer[0];
+    int rootY = buffer[1];
+    computeBoundingBox(view, buffer);
+    buffer[0] -= rootX;
+    buffer[1] -= rootY;
+
+    float result[] = new float[6];
+    result[0] = result[1] = 0;
+    for (int i = 2; i < 6; ++i) result[i] = PixelUtil.toDIPFromPixel(buffer[i - 2]);
+
+    return result;
+  }
+
   public static void scrollTo(View view, double argX, double argY, boolean animated) {
     int x = Math.round(PixelUtil.toPixelFromDIP(argX));
     int y = Math.round(PixelUtil.toPixelFromDIP(argY));

@@ -43,20 +43,22 @@ std::vector<std::pair<std::string, double>> hitTest(int viewTag, RCTUIManager *u
   if (view == nil) {
     return std::vector<std::pair<std::string, double>>(1, std::make_pair("viewTag", -1));
   }
-//  REAUIView *rootView = view;
-//
-//  while (rootView.superview && ![rootView isReactRootView]) {
-//    rootView = rootView.superview;
-//  }
-//
-//  if (rootView == nil) {
-//    return std::vector<std::pair<std::string, double>>(1, std::make_pair("x", -1234567.0));
-//  }
 
-  UIView *target = [view hitTest:CGPointMake(x, y) withEvent:nil];
+  REAUIView *rootView = view;
+
+  while (rootView.superview && ![rootView isReactRootView]) {
+    rootView = rootView.superview;
+  }
+
+  if (rootView == nil) {
+    return std::vector<std::pair<std::string, double>>(1, std::make_pair("viewTag", -1));
+  }
+
+  CGPoint testPoint = [rootView convertPoint:CGPointMake(x, y) toView:view];
+  UIView *target = [view hitTest:testPoint withEvent:nil];
   CGRect frame = [target convertRect:target.bounds toView:view];
 
-  while (target.reactTag == nil && target.superview != nil && target!=view) {
+  while (target.reactTag == nil && target.superview != nil) {
       target = target.superview;
   }
 

@@ -369,6 +369,22 @@ std::vector<std::pair<std::string, double>> NativeProxy::measure(int viewTag) {
       {"height", elements[5]},
   };
 }
+std::vector<std::pair<std::string, double>> NativeProxy::hitTest(int viewTag, double x, double y) {
+  static const auto method =
+      getJniMethod<local_ref<JArrayFloat>(int, double, double)>("hitTest");
+  local_ref<JArrayFloat> output = method(javaPart_.get(), viewTag);
+  size_t size = output->size();
+  auto elements = output->getRegion(0, size);
+
+  return {
+      {"x", elements[0]},
+      {"y", elements[1]},
+      {"pageX", elements[2]},
+      {"pageY", elements[3]},
+      {"width", elements[4]},
+      {"height", elements[5]},
+  };
+}
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED

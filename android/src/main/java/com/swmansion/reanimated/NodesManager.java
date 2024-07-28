@@ -84,6 +84,17 @@ public class NodesManager implements EventDispatcherListener {
     return NativeMethodsHelper.measure(view);
   }
 
+  public float[] hitTest(int viewTag, double x, double y) {
+    View view;
+    try {
+      view = mUIManager.resolveView(viewTag);
+    } catch (IllegalViewOperationException e) {
+      e.printStackTrace();
+      return (new float[] {NaN, NaN, NaN, NaN, NaN, NaN});
+    }
+    return NativeMethodsHelper.hitTest(view, x, y);
+  }
+
   public interface OnAnimationFrame {
     void onAnimationFrame(double timestampMs);
   }

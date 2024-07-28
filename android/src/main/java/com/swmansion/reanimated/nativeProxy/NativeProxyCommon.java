@@ -170,6 +170,11 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
+  public float[] hitTest(int viewTag, double x, double y) {
+    return mNodesManager.hitTest(viewTag, x, y);
+  }
+
+  @DoNotStrip
   public void configureProps(ReadableNativeArray uiProps, ReadableNativeArray nativeProps) {
     Set<String> uiPropsSet = convertProps(uiProps);
     Set<String> nativePropsSet = convertProps(nativeProps);
