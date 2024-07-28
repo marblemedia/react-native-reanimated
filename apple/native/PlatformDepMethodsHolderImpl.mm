@@ -148,6 +148,14 @@ MeasureFunction makeMeasureFunction(RCTUIManager *uiManager)
   return measureFunction;
 }
 
+HitTestFunction makeHitTestFunction(RCTUIManager *uiManager)
+{
+  auto hitTestFunction = [uiManager](int viewTag, double x, double y) -> std::vector<std::pair<std::string, double>> {
+    return hitTest(viewTag, uiManager, x, y);
+  };
+  return hitTestFunction;
+}
+
 ScrollToFunction makeScrollToFunction(RCTUIManager *uiManager)
 {
   auto scrollToFunction = [uiManager](int viewTag, double x, double y, bool animated) {
@@ -303,6 +311,8 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
 
   auto measureFunction = makeMeasureFunction(uiManager);
 
+  auto hitTestFunction = makeHitTestFunction(uiManager);
+
   auto scrollToFunction = makeScrollToFunction(uiManager);
 
   auto dispatchCommandFunction = makeDispatchCommandFunction(uiManager);
@@ -373,6 +383,7 @@ makePlatformDepMethodsHolder(RCTBridge *bridge, REANodesManager *nodesManager, R
       subscribeForKeyboardEventsFunction,
       unsubscribeFromKeyboardEventsFunction,
       maybeFlushUIUpdatesQueueFunction,
+      hitTestFunction
   };
   return platformDepMethodsHolder;
 }

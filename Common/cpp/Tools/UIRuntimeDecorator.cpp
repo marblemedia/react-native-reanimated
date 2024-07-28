@@ -19,7 +19,8 @@ void UIRuntimeDecorator::decorate(
     const SetGestureStateFunction setGestureState,
     const ProgressLayoutAnimationFunction progressLayoutAnimation,
     const EndLayoutAnimationFunction endLayoutAnimation,
-    const MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueue) {
+    const MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueue,
+    const HitTestFunction hitTest) {
   uiRuntime.global().setProperty(uiRuntime, "_UI", true);
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -45,6 +46,17 @@ void UIRuntimeDecorator::decorate(
         }
         return resultObject;
       });
+    jsi_utils::installJsiFunction(
+        uiRuntime,
+        "_hitTestPaper",
+        [hitTest](jsi::Runtime &rt, int viewTag, double x, double y) -> jsi::Value {
+          auto result = hitTest(viewTag, x, y);
+          jsi::Object resultObject(rt);
+          for (const auto &item : result) {
+            resultObject.setProperty(rt, item.first.c_str(), item.second);
+          }
+          return resultObject;
+        });
   jsi_utils::installJsiFunction(
       uiRuntime, "_obtainPropPaper", obtainPropFunction);
 #endif // RCT_NEW_ARCH_ENABLED

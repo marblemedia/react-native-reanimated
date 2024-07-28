@@ -36,6 +36,39 @@ std::vector<std::pair<std::string, double>> measure(int viewTag, RCTUIManager *u
   };
 }
 
+std::vector<std::pair<std::string, double>> hitTest(int viewTag, RCTUIManager *uiManager, double x, double y)
+{
+  REAUIView *view = [uiManager viewForReactTag:@(viewTag)];
+
+  if (view == nil) {
+    return std::vector<std::pair<std::string, double>>(1, std::make_pair("viewTag", -1));
+  }
+//  REAUIView *rootView = view;
+//
+//  while (rootView.superview && ![rootView isReactRootView]) {
+//    rootView = rootView.superview;
+//  }
+//
+//  if (rootView == nil) {
+//    return std::vector<std::pair<std::string, double>>(1, std::make_pair("x", -1234567.0));
+//  }
+
+  UIView *target = [view hitTest:CGPointMake(x, y) withEvent:nil];
+  CGRect frame = [target convertRect:target.bounds toView:view];
+
+  while (target.reactTag == nil && target.superview != nil && target!=view) {
+      target = target.superview;
+  }
+
+  return {
+      {"viewTag", [target.reactTag doubleValue]},
+      {"width", frame.size.width},
+      {"height", frame.size.height},
+      {"pageX", frame.origin.x},
+      {"pageY", frame.origin.y},
+  };
+}
+
 void scrollTo(int scrollViewTag, RCTUIManager *uiManager, double x, double y, bool animated)
 {
   REAUIView *view = [uiManager viewForReactTag:@(scrollViewTag)];

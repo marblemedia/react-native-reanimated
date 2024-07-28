@@ -31,6 +31,7 @@ SynchronouslyUpdateUIPropsFunction makeSynchronouslyUpdateUIPropsFunction(
 #else // RCT_NEW_ARCH_ENABLED
 UpdatePropsFunction makeUpdatePropsFunction(REAModule *reaModule);
 MeasureFunction makeMeasureFunction(RCTUIManager *uiManager);
+HitTestFunction makeHitTestFunction(RCTUIManager *uiManager);
 ScrollToFunction makeScrollToFunction(RCTUIManager *uiManager);
 DispatchCommandFunction makeDispatchCommandFunction(RCTUIManager *uiManager);
 ConfigurePropsFunction makeConfigurePropsFunction(REAModule *reaModule);

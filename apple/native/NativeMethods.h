@@ -10,6 +10,11 @@ namespace reanimated {
 std::vector<std::pair<std::string, double>> measure(
     int viewTag,
     RCTUIManager *uiManager);
+std::vector<std::pair<std::string, double>> hitTest(
+    int viewTag,
+    RCTUIManager *uiManager,
+    double x,
+    double y);
 void scrollTo(
     int scrollViewTag,
     RCTUIManager *uiManager,

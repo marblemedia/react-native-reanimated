@@ -124,24 +124,7 @@ var require_globals = __commonJS({
       "setImmediate",
       "arguments",
       "HermesInternal",
-      "_WORKLET",
-      "_createSuper",
-      "_callSuper",
-      "_possibleConstructorReturn",
-      "_assertThisInitialized",
-      "_isNativeReflectConstruct",
-      "_getPrototypeOf",
-      "_inherits",
-      "_setPrototypeOf",
-      "_typeof",
-      "_classCallCheck",
-      "_defineProperties",
-      "_defineProperty",
-      "_createClass",
-      "_toPropertyKey",
-      "_toPrimitive",
-      "_superPropBase",
-      "_get", 
+      "_WORKLET"
     ];
     var notCapturedIdentifiers_DEPRECATED = [
       "_IS_FABRIC",
@@ -262,11 +245,7 @@ var require_workletStringCode = __commonJS({
         }
       }
       const transformed = (0, core_1.transformSync)(code, {
-        plugins: [
-          prependClosureVariablesIfNecessary(closureVariables),
-          "@babel/plugin-transform-class-properties",
-          "@babel/plugin-transform-classes"
-        ],
+        plugins: [prependClosureVariablesIfNecessary(closureVariables)],
         compact: true,
         sourceMaps: includeSourceMap,
         inputSourceMap: inputMap,
@@ -276,10 +255,6 @@ var require_workletStringCode = __commonJS({
         comments: false
       });
       (0, assert_1.strict)(transformed, "[Reanimated] `transformed` is null.");
-      if (transformed.code) {
-        const index = transformed.code.indexOf(`function ${name}`);
-        transformed.code = transformed.code.slice(index);
-      }
       let sourceMap;
       if (includeSourceMap) {
         if (shouldMockSourceMap()) {

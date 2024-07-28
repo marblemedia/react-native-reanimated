@@ -50,6 +50,9 @@ using DispatchCommandFunction = std::function<void(
     const jsi::Value &argsValue)>;
 using MeasureFunction =
     std::function<std::vector<std::pair<std::string, double>>(int)>;
+using HitTestFunction =
+    std::function<std::vector<std::pair<std::string, double>>(int, double, double)>;
+
 using ObtainPropFunction =
     std::function<jsi::Value(jsi::Runtime &, const int, const jsi::Value &)>;
 
@@ -97,6 +100,8 @@ struct PlatformDepMethodsHolder {
   KeyboardEventSubscribeFunction subscribeForKeyboardEvents;
   KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEvents;
   MaybeFlushUIUpdatesQueueFunction maybeFlushUIUpdatesQueueFunction;
+
+  HitTestFunction hitTestFunction;
 };
 
 } // namespace reanimated

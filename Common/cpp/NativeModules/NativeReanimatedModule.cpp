@@ -150,7 +150,8 @@ void NativeReanimatedModule::commonInit(
       platformDepMethodsHolder.setGestureStateFunction,
       platformDepMethodsHolder.progressLayoutAnimation,
       platformDepMethodsHolder.endLayoutAnimation,
-      platformDepMethodsHolder.maybeFlushUIUpdatesQueueFunction);
+      platformDepMethodsHolder.maybeFlushUIUpdatesQueueFunction,
+      platformDepMethodsHolder.hitTestFunction);
 }
 
 NativeReanimatedModule::~NativeReanimatedModule() {
