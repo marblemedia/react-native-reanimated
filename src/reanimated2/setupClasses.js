@@ -45,7 +45,7 @@ export function setupClasses() {
 
   function _callSuper(t, o, e) {
     return (
-      (o = global.__getPrototypeOf(o)),
+      (o = global._getPrototypeOf(o)),
       global._possibleConstructorReturn(
         t,
         global._isNativeReflectConstruct()
