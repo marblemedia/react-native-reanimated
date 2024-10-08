@@ -120,6 +120,25 @@ const notCapturedIdentifiers = [
   '_WORKLET',
   'ReanimatedError',
   '__reanimatedLoggerConfig',
+
+  // Classes
+  '_createSuper',
+  '_callSuper',
+  '_possibleConstructorReturn',
+  '_assertThisInitialized',
+  '_isNativeReflectConstruct',
+  '_getPrototypeOf',
+  '_inherits',
+  '_setPrototypeOf',
+  '_typeof',
+  '_classCallCheck',
+  '_defineProperties',
+  '_defineProperty',
+  '_createClass',
+  '_toPropertyKey',
+  '_toPrimitive',
+  '_superPropBase',
+  '_get',
 ];
 
 /**

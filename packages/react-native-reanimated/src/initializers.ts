@@ -21,6 +21,7 @@ import {
   runOnUIImmediately,
   setupMicrotasks,
 } from './threads';
+import { setupClasses } from './setupClasses';
 
 const IS_JEST = isJest();
 const SHOULD_BE_USE_WEB = shouldBeUseWeb();
@@ -206,6 +207,7 @@ export function initializeUIRuntime(ReanimatedModule: IReanimatedModule) {
 
   runOnUIImmediately(() => {
     'worklet';
+    setupClasses();
     setupCallGuard();
     setupConsole();
     if (!SHOULD_BE_USE_WEB) {
