@@ -133,7 +133,11 @@ export function buildWorkletString(
 
   const transformed = workletTransformSync(code, {
     filename: state.file.opts.filename,
-    extraPlugins: [getClosurePlugin(closureVariables)],
+    extraPlugins: [
+      getClosurePlugin(closureVariables),
+      '@babel/plugin-transform-class-properties',
+      '@babel/plugin-transform-classes',
+    ],
     compact: true,
     sourceMaps: includeSourceMap,
     inputSourceMap: inputMap,
@@ -145,6 +149,10 @@ export function buildWorkletString(
 
   assert(transformed, '[Reanimated] `transformed` is null.');
 
+  if (transformed.code) {
+    const index = transformed.code.indexOf(`function ${workletName}`);
+    transformed.code = transformed.code.slice(index);
+  }
   let sourceMap;
   if (includeSourceMap) {
     if (shouldMockSourceMap()) {
