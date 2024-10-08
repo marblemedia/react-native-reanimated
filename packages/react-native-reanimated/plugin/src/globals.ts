@@ -116,14 +116,33 @@ const notCapturedIdentifiers = [
 
   // Reanimated
   '_WORKLET',
+
+  // Classes
+  '_createSuper',
+  '_callSuper',
+  '_possibleConstructorReturn',
+  '_assertThisInitialized',
+  '_isNativeReflectConstruct',
+  '_getPrototypeOf',
+  '_inherits',
+  '_setPrototypeOf',
+  '_typeof',
+  '_classCallCheck',
+  '_defineProperties',
+  '_defineProperty',
+  '_createClass',
+  '_toPropertyKey',
+  '_toPrimitive',
+  '_superPropBase',
+  '_get',
 ];
 
 /**
- * @deprecated Since we moved on to using `global.` prefix in Reanimated, we don't need to
- * capture these identifiers anymore. However, for safety reasons and 3rd party libraries,
- * we still keep them in the list.
+ * @deprecated Since we moved on to using `global.` prefix in Reanimated, we
+ *   don't need to capture these identifiers anymore. However, for safety
+ *   reasons and 3rd party libraries, we still keep them in the list.
  *
- * `_WORKLET` is the only exception since it's a part of the public API.
+ *   `_WORKLET` is the only exception since it's a part of the public API.
  */
 // eslint-disable-next-line camelcase
 const notCapturedIdentifiers_DEPRECATED = [
