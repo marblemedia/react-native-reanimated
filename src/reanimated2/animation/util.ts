@@ -34,6 +34,7 @@ import {
 } from './transformationMatrix/matrixUtils';
 import { isReducedMotion, shouldBeUseWeb } from '../PlatformChecker';
 import type { EasingFunction, EasingFunctionFactory } from '../Easing';
+import { runOnUI } from '../threads'
 
 let IN_STYLE_UPDATER = false;
 const IS_REDUCED_MOTION = isReducedMotion();
@@ -536,5 +537,12 @@ export function defineAnimation<
 export function cancelAnimation<T>(sharedValue: SharedValue<T>): void {
   'worklet';
   // setting the current value cancels the animation if one is currently running
-  sharedValue.value = sharedValue.value; // eslint-disable-line no-self-assign
+   if (_WORKLET) {
+    sharedValue.value = sharedValue.value; // eslint-disable-line no-self-assign
+  } else {
+    runOnUI(() => {
+      'worklet';
+      sharedValue.value = sharedValue.value; // eslint-disable-line no-self-assign
+    })();
+  }
 }
