@@ -314,9 +314,8 @@ function isRemoteFunction<T>(value: {
  * to be mutable they should use shared values instead.
  */
 function freezeObjectIfDev<T extends object>(value: T) {
-  if (!__DEV__) {
-    return;
-  }
+  return;
+
   Object.entries(value).forEach(([key, element]) => {
     Object.defineProperty(value, key, {
       get() {
