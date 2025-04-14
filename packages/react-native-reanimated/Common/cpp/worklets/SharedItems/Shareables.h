@@ -281,7 +281,7 @@ public:
 
     jsi::Value toJSValue(jsi::Runtime &rt) override {
         auto buf = std::make_shared<MutableRawBuffer>(data_, size_);
-        return jsi::ArrayBuffer(rt, buf);
+        return jsi::ArrayBuffer(rt, std::move(buf));
     }
 
 protected:
