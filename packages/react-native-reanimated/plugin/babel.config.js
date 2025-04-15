@@ -3,5 +3,7 @@ const reanimatedPlugin = require('./index.js');
 
 /** @type {import('@babel/core').TransformOptions} */
 module.exports = {
-  plugins: [reanimatedPlugin],
+  plugins: [
+    reanimatedPlugin
+  ],
 };

@@ -135,6 +135,8 @@ export function buildWorkletString(
   const transformed = workletTransformSync(code, {
     filename: state.file.opts.filename,
     extraPlugins: [
+      '@babel/plugin-transform-class-properties',
+      '@babel/plugin-transform-classes',
       getClosurePlugin(closureVariables),
       ...(state.opts.extraPlugins ?? []),
     ],
