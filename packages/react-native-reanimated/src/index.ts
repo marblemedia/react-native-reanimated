@@ -90,6 +90,7 @@ export {
   isConfigured,
   isReanimated3,
   makeMutable,
+  makeMutableUI,
   makeShareableCloneRecursive,
   runOnJS,
   runOnRuntime,
