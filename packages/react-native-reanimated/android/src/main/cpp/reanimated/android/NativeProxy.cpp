@@ -416,6 +416,10 @@ void NativeProxy::progressLayoutAnimation(
       tag, newPropsJNI, isSharedTransition);
 }
 
+void NativeProxy::endLayoutAnimation(int tag, bool shouldRemove) {
+  layoutAnimations_->cthis()->endLayoutAnimation(tag, shouldRemove);
+}
+
 PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
 #ifdef RCT_NEW_ARCH_ENABLED
   // nothing
@@ -455,14 +459,8 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
   auto progressLayoutAnimation =
       bindThis(&NativeProxy::progressLayoutAnimation);
 
-  auto endLayoutAnimation = [weakThis = weak_from_this()](
-                                int tag, bool removeView) {
-    auto strongThis = weakThis.lock();
-    if (!strongThis) {
-      return;
-    }
-    strongThis->layoutAnimations_->cthis()->endLayoutAnimation(tag, removeView);
-  };
+  // https://github.com/software-mansion/react-native-reanimated/issues/7109#issuecomment-2841588588
+  auto endLayoutAnimation = bindThis(&NativeProxy::endLayoutAnimation);
 
   auto maybeFlushUiUpdatesQueueFunction =
       bindThis(&NativeProxy::maybeFlushUIUpdatesQueue);

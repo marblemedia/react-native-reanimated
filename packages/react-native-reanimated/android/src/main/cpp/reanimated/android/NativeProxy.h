@@ -234,6 +234,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy>,
       const jsi::Object &newProps,
       bool isSharedTransition);
 
+  void endLayoutAnimation(int tag, bool shouldRemove);
+
   /***
    * Wraps a method of `NativeProxy` in a function object capturing `this`
    * @tparam TReturn return type of passed method
