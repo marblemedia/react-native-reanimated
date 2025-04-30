@@ -1,6 +1,6 @@
 'use strict';
 import type { Component } from 'react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { FlatList, ScrollView } from 'react-native';
 import { Platform } from 'react-native';
 
@@ -11,7 +11,7 @@ import { findNodeHandle } from '../platformFunctions/findNodeHandle';
 import { shareableMappingCache } from '../shareableMappingCache';
 import { makeShareableCloneRecursive } from '../shareables';
 import type { AnimatedRef, AnimatedRefOnUI } from './commonTypes';
-import { useSharedValue } from './useSharedValue';
+import { makeMutable } from '../mutables';
 
 const IS_WEB = isWeb();
 
@@ -44,8 +44,10 @@ function getComponentOrScrollable(component: MaybeScrollableComponent) {
 export function useAnimatedRef<
   TComponent extends Component,
 >(): AnimatedRef<TComponent> {
-  const tag = useSharedValue<number | ShadowNodeWrapper | null>(-1);
-  const viewName = useSharedValue<string | null>(null);
+  const [tag] = useState(() =>
+    makeMutable<number | ShadowNodeWrapper | null>(-1)
+  );
+  const [viewName] = useState(() => makeMutable<string | null>(null));
 
   const ref = useRef<AnimatedRef<TComponent> | null>(null);
 
@@ -65,7 +67,9 @@ export function useAnimatedRef<
             : getTagValueFunction(getComponentOrScrollable(component));
         };
 
-        tag.value = getTagOrShadowNodeWrapper();
+        const initialValue = getTagOrShadowNodeWrapper();
+
+        tag.value = initialValue;
 
         // On Fabric we have to unwrap the tag from the shadow node wrapper
         fun.getTag = isFabric()
@@ -79,7 +83,13 @@ export function useAnimatedRef<
             (component as MaybeScrollableComponent)?.viewConfig
               ?.uiViewClassName || 'RCTView';
         }
+
+        // return early if the component is mounting to avoid reading the tag.value
+        if (!ref.current) {
+          return initialValue;
+        }
       }
+
       return tag.value;
     });
 

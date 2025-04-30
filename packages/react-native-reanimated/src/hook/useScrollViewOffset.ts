@@ -1,5 +1,5 @@
 'use strict';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { SharedValue } from '../commonTypes';
 import type { AnimatedScrollView } from '../component/ScrollView';
@@ -12,6 +12,7 @@ import type {
 import type { EventHandlerInternal } from './useEvent';
 import { useEvent } from './useEvent';
 import { useSharedValue } from './useSharedValue';
+import { makeMutable } from '../mutables';
 
 const IS_WEB = isWeb();
 
@@ -72,7 +73,7 @@ function useScrollViewOffsetNative(
   animatedRef: AnimatedRef<AnimatedScrollView> | null,
   providedOffset?: SharedValue<number>
 ): SharedValue<number> {
-  const internalOffset = useSharedValue(0);
+  const [internalOffset] = useState(() => makeMutable<number>(0));
   const offset = useRef(providedOffset ?? internalOffset).current;
 
   const eventHandler = useEvent<RNNativeScrollEvent>(

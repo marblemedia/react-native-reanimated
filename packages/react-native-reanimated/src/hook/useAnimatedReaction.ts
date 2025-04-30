@@ -1,11 +1,10 @@
 'use strict';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { WorkletFunction } from '../commonTypes';
-import { startMapper, stopMapper } from '../core';
+import { makeMutable, startMapper, stopMapper } from '../core';
 import { shouldBeUseWeb } from '../PlatformChecker';
 import type { DependencyList } from './commonTypes';
-import { useSharedValue } from './useSharedValue';
 
 /**
  * Lets you to respond to changes in a [shared
@@ -36,7 +35,7 @@ export function useAnimatedReaction<PreparedResult>(
   >,
   dependencies?: DependencyList
 ) {
-  const previous = useSharedValue<PreparedResult | null>(null);
+  const [previous] = useState(() => makeMutable<PreparedResult | null>(null));
 
   let inputs = Object.values(prepare.__closure ?? {});
 
