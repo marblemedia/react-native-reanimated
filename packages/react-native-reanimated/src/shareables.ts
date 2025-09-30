@@ -481,9 +481,9 @@ function isRemoteFunction<T>(value: {
  * should use shared values instead.
  */
 function freezeObjectInDev<T extends object>(value: T) {
-  if (!__DEV__) {
-    return;
-  }
+  // we don't freeze since it sometimes causes problems with mobx
+  return;
+
   Object.entries(value).forEach(([key, element]) => {
     const descriptor = Object.getOwnPropertyDescriptor(value, key)!;
     if (!descriptor.configurable) {

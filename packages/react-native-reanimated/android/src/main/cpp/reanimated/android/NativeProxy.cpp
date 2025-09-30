@@ -415,7 +415,7 @@ void NativeProxy::progressLayoutAnimation(
 }
 
 void NativeProxy::endLayoutAnimation(int tag, bool shouldRemove) {
-  layoutAnimations_->cthis()->endLayoutAnimation(tag, shouldRemove);
+  (*layoutAnimations_)->cthis()->endLayoutAnimation(tag, shouldRemove);
 }
 
 PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
