@@ -177,7 +177,17 @@ export function setupClasses() {
     return ('string' === r ? String : Number)(t);
   }
 
+  function _superPropGet(t, o, e, r) {
+    var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e);
+    return 2 & r && 'function' == typeof p
+      ? function (t) {
+          return p.apply(e, t);
+        }
+      : p;
+  }
+
   Object.assign(global, {
+    _superPropGet,
     _callSuper,
     _possibleConstructorReturn,
     _assertThisInitialized,
