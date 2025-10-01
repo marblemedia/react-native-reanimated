@@ -1,7 +1,9 @@
 // @ts-nocheck
 
 export function setupClasses() {
-  'worklet';
+  ('worklet');
+
+  // helpers from https://github.com/babel/babel/blob/841950feaee6f37325c663f6ba6600e2b1709bd3/packages/babel-helpers/src/helpers-generated.ts
 
   function _createSuper(t) {
     return function () {
